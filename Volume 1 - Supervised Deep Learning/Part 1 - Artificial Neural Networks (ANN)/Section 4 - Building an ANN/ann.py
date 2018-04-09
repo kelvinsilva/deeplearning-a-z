@@ -53,6 +53,59 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense
 
+# Initializing the neural network
 classifier = Sequential()
 
+# Adding hidden layer and input layer
 classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu', input_dim = 11 ))
+
+# Add second hidden layer
+classifier.add(Dense(units = 6, init = 'uniform', activation = 'relu'))
+
+# Adding the output layer
+classifier.add(Dense(units = 1, init = 'uniform', activation = 'sigmoid'))
+
+# Compile the neural network
+# Do stochastic gradient descent
+classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'] )
+
+# Fit the ann to the training set
+classifier.fit(x_train, y_train, batch_size = 10, nb_epoch = 100)
+
+# Part 3 - Make predictions
+
+y_pred = classifier.predict(x_test)
+y_pred = (y_pred > 0.5)
+
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+
+# homework challenge test
+custom_test = np.array([[0,0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000] ])
+custom_test = sc_x.transform(custom_test)
+a = classifier.predict(custom_test)
+
+# Part 4 - Evaluate the ANN
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import cross_val_score
+
+
+def build_classifier():
+    classifier = Sequential()
+    classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu', input_dim = 11 ))
+    classifier.add(Dense(units = 6, init = 'uniform', activation = 'relu'))
+    classifier.add(Dense(units = 1, init = 'uniform', activation = 'sigmoid'))
+    classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'] )
+    return classifier
+
+classifier = KerasClassifier(build_fn = build_classifier, batch_size = 10, nb_epoch = 100)
+accuracies = cross_val_score(estimator = classifier, X = x_train, y = y_train, cv = 10, n_jobs = 1)
+
+
+
+
+
+
